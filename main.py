@@ -9,9 +9,9 @@ import random
 pygame.init()
 pygame.font.init()
 SCREEN_MIN_SIZE = 500
-amount_of_cells = 10  # Can be made to autoadjust after % of ur screen
-ROWS = 10
-COLUMNS = 10  # The amount of cells is equal in rows and columns, 16x16 (LOCKED)
+amount_of_cells = 16  # Can be made to autoadjust after % of ur screen
+ROWS = 16
+COLUMNS = 16  # The amount of cells is equal in rows and columns, 16x16 (LOCKED)
 bomb_chance = 0.1  # Change to prefered value or use default 0.25
 revealed = False
 value = 0
