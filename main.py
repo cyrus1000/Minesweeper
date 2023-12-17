@@ -2,6 +2,7 @@ import pygame
 import sys
 from cell import Cell
 from calcs import measure_distance
+import random
 
 """ This is the main file you work on for the project"""
 
@@ -11,7 +12,9 @@ SCREEN_MIN_SIZE = 500
 amount_of_cells = 10  # Can be made to autoadjust after % of ur screen
 ROWS = 10
 COLUMNS = 10  # The amount of cells is equal in rows and columns, 16x16 (LOCKED)
-bomb_chance = 0.25  # Change to prefered value or use default 0.25
+bomb_chance = 0.1  # Change to prefered value or use default 0.25
+revealed = False
+value = 0
 
 CELL_SIZE = SCREEN_MIN_SIZE // amount_of_cells  # how large can each cell be?
 READJUSTED_SIZE = CELL_SIZE * amount_of_cells
@@ -30,12 +33,18 @@ cells = []
 
 def create_cells():
     """This function is meant to initialy generate all the cells and create the boundaries"""
-    # This is a good base to go from (think about it thoroughly before you code!! We want to create 16x16 list with each object being a cell):
-
-
+    # This is a good base to go3 from (think about it thoroughly before you code!! We want to create 16x16 list with each object being a cell):
+    bomb = round(bomb_chance * (ROWS * COLUMNS))
+    mine_location = random.sample(range(ROWS * COLUMNS), bomb)
+    count = 0
     for a_row in range(ROWS):
         row = []
         for a_column in range(COLUMNS):
+            count = count + 1
+            if count in mine_location:
+                value = -1
+            else:
+                value = 0
             my_cell = Cell(
                 a_row * CELL_SIZE,
                 a_column * CELL_SIZE,
@@ -43,11 +52,13 @@ def create_cells():
                 CELL_SIZE,
                 ROWS,
                 COLUMNS,
-                bomb_chance,
+                revealed,
+                value,
             )
             row.append(my_cell)
-    
+
         cells.append(row)
+
 
 # pass
 
@@ -61,6 +72,13 @@ def draw_cells():
     for a_row in cells:
         for cell in a_row:
             cell.draw(screen)
+            if cell.revealed and cell.value == 0:
+                font = pygame.font.SysFont(None, 30)
+                text = font.render(str(cell.value), True, WHITE)
+                text_rect = text.get_rect(
+                    center=(cell.x + CELL_SIZE // 2, cell.y + CELL_SIZE // 2)
+                )
+                screen.blit(text, text_rect)
 
     # pass
 
@@ -74,21 +92,37 @@ def count_mines(row, col):
     count = 0
     for i in range(max(0, row - 1), min(row + 2, ROWS)):
         for j in range(max(0, col - 1), min(col + 2, COLUMNS)):
-            if cells[row][col].grid[i][j] == -1:
-                count += 1
+            if cells[row][col] == -1:
+                count = count + 1
     return count
 
 
 def reveal_empty_cells(row, col):
     for i in range(max(0, row - 1), min(row + 2, ROWS)):
         for j in range(max(0, col - 1), min(col + 2, COLUMNS)):
-            if cells[row][col].grid[i][j] == 0:
-                cells[row][col].grid[i][j] = count_mines(i, j)
-                if cells[row][col].grid[i][j] == 0:
+            # print(f"Checking cell ({i}, {j})")
+            if cells[i][j].value == 0 and not cells[i][j].revealed:
+                cells[i][j].revealed = True
+                cells[i][j].value = count_mines(i, j)
+                pygame.draw.rect(
+                    screen,
+                    (0, 255, 0),  # Change color based on value
+                    (
+                        cells[i][j].x,
+                        cells[i][j].y,
+                        cells[i][j].width,
+                        cells[i][j].height,
+                    ),
+                    cells[i][j].cell_thickness,
+                    cells[i][j].value,
+                )
+                # print(f"Empty cell found at ({i}, {j})")
+                if cells[i][j] == 0:
+                    print(f"Recursively revealing empty cells from ({i}, {j})")
                     reveal_empty_cells(i, j)
 
 
-def event_handler(event):
+def event_handler(event, screen):
     """This function handles all events in the program"""
 
     if event.type == pygame.QUIT:
@@ -102,17 +136,18 @@ def event_handler(event):
         col = x // CELL_SIZE
         row = y // CELL_SIZE
 
-        if cells[row][col].grid[row][col] == -1:
+        if cells[row][col].value == -1:
             print("Game Over!")
             pygame.quit()
             sys.exit()
-        elif cells[row][col].grid[row][col] == 0:
-            cells[row][col].grid[row][col] = count_mines(row, col)
+        elif cells[row][col].value == 0 and not cells[row][col].revealed:
+            cells[row][col].revealed = True
             reveal_empty_cells(row, col)
             pygame.display.flip()
             pygame.display.update()
+            print("reveal trying")
         else:
-            cells[row][col].grid[row][col] = count_mines(row, col)
+            cells[row][col].revealed = True
 
 
 def run_setup():
@@ -133,11 +168,10 @@ def main():
 
     while True:
         for event in pygame.event.get():
-            event_handler(event)
-
-            # draw()
+            event_handler(event, screen)
+            pygame.display.flip()
+        draw()
         pygame.display.flip()
-        pygame.display.update()
 
     terminate_program()
 

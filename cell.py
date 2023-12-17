@@ -1,11 +1,10 @@
 import pygame
-import random
 
 
 class Cell:
     """This file contains the cell class representing each square in the game"""
 
-    def __init__(self, x, y, width, height, rows, columns, bomb_chance):
+    def __init__(self, x, y, width, height, rows, columns, revealed, value):
         self.x = x
         self.y = y
         self.width = width
@@ -14,19 +13,13 @@ class Cell:
         self.cell_thickness = 2
         self.neighbouring_bombs = 0
         self.selected = False
-        self.rows = rows
-        self.columns = columns
-        self.grid = [[0] * self.columns for _ in range(self.rows)]
+        self.value = value
+        self.revealed = False
 
         self.cell_center = (
             self.x + self.width // 2,
             self.y + self.width // 2,
         )  # useful for drawing
-        self.bomb = round(bomb_chance * (rows * columns))
-        self.mine_location = random.sample(range(self.rows * self.columns), self.bomb)
-        for loc in self.mine_location:
-            row, col = divmod(loc, self.columns)
-            self.grid[row][col] = -1
 
     def draw(self, screen):
         """This method is called in the main.py files draw_cells fkn"""
