@@ -33,21 +33,21 @@ def create_cells():
     # This is a good base to go from (think about it thoroughly before you code!! We want to create 16x16 list with each object being a cell):
 
 
-for a_row in range(ROWS):
-    row = []
-    for a_column in range(COLUMNS):
-        my_cell = Cell(
-            a_row * CELL_SIZE,
-            a_column * CELL_SIZE,
-            CELL_SIZE,
-            CELL_SIZE,
-            ROWS,
-            COLUMNS,
-            bomb_chance,
-        )
-        row.append(my_cell)
-
-    cells.append(row)
+    for a_row in range(ROWS):
+        row = []
+        for a_column in range(COLUMNS):
+            my_cell = Cell(
+                a_row * CELL_SIZE,
+                a_column * CELL_SIZE,
+                CELL_SIZE,
+                CELL_SIZE,
+                ROWS,
+                COLUMNS,
+                bomb_chance,
+            )
+            row.append(my_cell)
+    
+        cells.append(row)
 
 # pass
 
