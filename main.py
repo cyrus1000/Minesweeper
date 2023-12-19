@@ -50,8 +50,6 @@ def create_cells():
                 a_column * CELL_SIZE,
                 CELL_SIZE,
                 CELL_SIZE,
-                ROWS,
-                COLUMNS,
                 revealed,
                 value,
             )
@@ -169,7 +167,7 @@ def main():
     while True:
         for event in pygame.event.get():
             event_handler(event, screen)
-            pygame.display.flip()
+            #pygame.display.flip()
         draw()
         pygame.display.flip()
 
