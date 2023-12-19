@@ -4,7 +4,7 @@ import pygame
 class Cell:
     """This file contains the cell class representing each square in the game"""
 
-    def __init__(self, x, y, width, height, rows, columns, revealed, value):
+    def __init__(self, x, y, width, height, revealed, value):
         self.x = x
         self.y = y
         self.width = width
